@@ -1,11 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { CreateBookDto } from "./dtos/createBook.dto";
 import { UpdateBookDto } from "./dtos/updateBook.dto";
 import { ObjectId } from "mongodb";
 import { FilterBookDto } from "./dtos/filterBook.dto";
 import { GivePointDto } from "./dtos/givePoint.dto";
+import { AuthGuard } from "../guard/auth.guard";
 
+@UseGuards(AuthGuard)
 @Controller('books')
 export class BookController {
   constructor(private bookService: BookService) {}
