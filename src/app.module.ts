@@ -7,18 +7,24 @@ import { Book } from "./schemas/book.schema";
 import { User } from "./schemas/user.schema";
 import { UserModule } from "./user/user.module";
 import { JwtModule } from "@nestjs/jwt";
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mongodb',
-      url: 'mongodb+srv://uysalmstf:Mu__77110804@cluster0.t2vcm.mongodb.net/keysop',
-      database: 'keysop',
-      useUnifiedTopology: true,
-      entities: [Book, User],
-      synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
-    JwtModule.register({ global: true, secret: "102030" }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mongodb',
+        url: configService.get<string>('MONGO_URL'),
+        entities: [User, Book],
+        useUnifiedTopology: true,
+      }),
+    }),
+    JwtModule.register({ global: true, secret: process.env.JWT_SECRET }),
     BookModule,
     UserModule
   ],
